@@ -4,6 +4,7 @@ GET /todo controllers.SimpleController.todo
 GET /someHtml controllers.SimpleController.someHtml
 
 GET /song/:id controllers.SongController.index(id: Long)
+GET /song controllers.SongController.findByCode(code: String)
 GET /songs controllers.SongController.list(offset: Int ?= 0, limit: Int ?= 10)
 POST /song controllers.SongController.insert
 PUT /song/:id controllers.SongController.update(id: Long)

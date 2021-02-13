@@ -47,6 +47,35 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 
+  def findByCode(code: String): Action[AnyContent] = Action {
+    //logger.debug(s"Reading song $id")
+
+    db.withConnection { implicit c =>
+      SQL"""
+             SELECT songs.id,
+                    songs.code,
+                    songs.name,
+                    songs.secondary_name as secondaryName,
+                    songs.song_key as songKey,
+                    artists.id as artistId,
+                    artists.name as artistName,
+                    songs.style,
+                    songs.tempo,
+                    songs.ccli_number as ccliNumber,
+                    songs.video_link as videoLink,
+                    songs.piano_sheet as pianoSheet,
+                    songs.lead_sheet as leadSheet,
+                    songs.guitar_sheet as guitarSheet,
+                    songs.lyrics_sheet as lyricsSheet
+             from songs left join artists ON (songs.artist = artists.id)
+             where songs.code = $code
+             """.as(Song.parser.singleOpt) match {
+        case Some(song) => Ok(Json.toJson(song))
+        case None => NotFound(Json.obj("error" -> "Not Found"))
+      }
+    }
+  }
+
   def list(offset: Int, limit: Int): Action[AnyContent] = Action {
     //logger.debug(s"Reading Songs")
 
