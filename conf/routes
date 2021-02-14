@@ -8,3 +8,8 @@ GET /song controllers.SongController.findByCode(code: String)
 GET /songs controllers.SongController.list(offset: Int ?= 0, limit: Int ?= 10)
 POST /song controllers.SongController.insert
 PUT /song/:id controllers.SongController.update(id: Long)
+
+GET /artist/:id controllers.ArtistController.index(id: Long)
+GET /artists controllers.ArtistController.list(offset: Int ?= 0, limit: Int ?= 10)
+POST /artist controllers.ArtistController.insert
+PUT /artist/:id controllers.ArtistController.update(id: Long)

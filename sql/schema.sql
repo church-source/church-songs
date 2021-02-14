@@ -1,6 +1,6 @@
 create table if not exists artists
 (
-    id bigint not null
+    id bigint auto_increment
         primary key,
     name varchar(1000) not null,
     constraint artists_name_uindex

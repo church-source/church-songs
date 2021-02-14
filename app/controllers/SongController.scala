@@ -106,12 +106,10 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
   }
 
   def insert(): Action[JsValue] = Action(parse.json) { req =>
-      println("HelloWorld")
       Json.fromJson[Song](req.body) match {
         case JsSuccess(song, _) =>
 
           val id: Option[Long] = db.withConnection { implicit c =>
-            println("here: " + song.code)
             val sql = SQL"""
                insert into songs (code,name,secondary_name,song_key,artist,style,tempo,ccli_number,video_link,piano_sheet,lead_sheet,guitar_sheet,lyrics_sheet)
                values (${song.code}, ${song.name}, ${song.secondaryName}, ${song.songKey}, ${song.artist.artistId}, ${song.style}, ${song.tempo}, ${song.ccliNumber}, ${song.videoLink}, ${song.pianoSheet}, ${song.leadSheet}, ${song.guitarSheet}, ${song.lyricsSheet})
