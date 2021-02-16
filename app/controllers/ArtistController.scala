@@ -46,7 +46,8 @@ class ArtistController @Inject()(val controllerComponents: ControllerComponents,
   }
 
   def insert(): Action[JsValue] = Action(parse.json) { req =>
-      Json.fromJson[Artist](req.body) match {
+    logger.debug("Got here today:")
+    Json.fromJson[Artist](req.body) match {
         case JsSuccess(artist, _) =>
 
           val id: Option[Long] = db.withConnection { implicit c =>

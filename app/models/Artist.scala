@@ -3,6 +3,7 @@ package models
 import play.api.libs.json.{JsValue, OFormat}
 import anorm._
 import ai.x.play.json.Jsonx
+import play.api.Logger
 
 final case class Artist(
                    artistId: Option[Long] = None,
