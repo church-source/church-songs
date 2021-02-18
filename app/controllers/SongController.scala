@@ -98,7 +98,7 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
                     songs.guitar_sheet as guitarSheet,
                     songs.lyrics_sheet as lyricsSheet
              from songs left join artists ON (songs.artist = artists.id)
-             order by songs.name desc
+             order by songs.name
              limit $limit offset $offset
              """.as(Song.parser.*)
       Ok(Json.toJson(songs))
