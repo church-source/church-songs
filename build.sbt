@@ -3,7 +3,9 @@ organization := "com.example"
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).enablePlugins(PlayScala,JavaAppPackaging).settings(
+  dockerSettings
+)
 
 scalaVersion := "2.13.3"
 
@@ -24,3 +26,14 @@ libraryDependencies += "ai.x" %% "play-json-extensions" % "0.40.2"
 javaOptions in Universal ++= Seq(
   "-Dpidfile.path=/dev/null"
 )
+
+lazy val dockerSettings =
+  Seq(
+    daemonUser.in(Docker) := "root",
+    maintainer.in(Docker) := "Rowan Pillay",
+    version.in(Docker) := "latest",
+    dockerBaseImage := "openjdk:8",
+    dockerExposedPorts := Vector(9000),
+    dockerRepository := Some("docker.io"),
+    dockerUsername := Some("churchsource")
+  )
