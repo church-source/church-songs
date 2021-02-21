@@ -5,9 +5,11 @@ GET /someHtml controllers.SimpleController.someHtml
 
 GET /song/:id controllers.SongController.index(id: Long)
 GET /song controllers.SongController.findByCode(code: String)
-GET /songs controllers.SongController.list(offset: Int ?= 0, limit: Int ?= 10)
+
 POST /song controllers.SongController.insert
 PUT /song/:id controllers.SongController.update(id: Long)
+
+GET /songs controllers.SongController.list(search: Option[String], artistId: Option[Long], offset: Int ?= 0, limit: Int ?= 10)
 
 GET /artist/:id controllers.ArtistController.index(id: Long)
 GET /artists controllers.ArtistController.list(offset: Int ?= 0, limit: Int ?= 10)

@@ -14,12 +14,9 @@ import play.api.Logger
 @Singleton
 class SongController @Inject()(val controllerComponents: ControllerComponents, db: Database) extends BaseController {
 
-//  private implicit val songWrites: OWrites[Song] = Json.writes[Song]
-//  private implicit val songReads: Reads[Song] = Json.reads[Song]
   val logger = Logger("application")
 
   def index(id: Long): Action[AnyContent] = Action {
-    //logger.debug(s"Reading song $id")
 
     db.withConnection { implicit c =>
           SQL"""
@@ -48,8 +45,6 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
   }
 
   def findByCode(code: String): Action[AnyContent] = Action {
-    //logger.debug(s"Reading song $id")
-
     db.withConnection { implicit c =>
       SQL"""
              SELECT songs.id,
@@ -76,8 +71,8 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 
-  def list(offset: Int, limit: Int): Action[AnyContent] = Action {
-    //logger.debug(s"Reading Songs")
+  def list(search: Option[String], artistId: Option[Long], offset: Int, limit: Int): Action[AnyContent] = Action {
+    //loggerlogger.debug(s"Reading Songs")
 
     db.withConnection { implicit c =>
       val songs =
@@ -97,7 +92,9 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
                     songs.lead_sheet as leadSheet,
                     songs.guitar_sheet as guitarSheet,
                     songs.lyrics_sheet as lyricsSheet
-             from songs left join artists ON (songs.artist = artists.id)
+             from songs left join artists ON (songs.artist = artists.id) where
+             ($search is null OR (match (songs.name, secondary_name) AGAINST ($search))) AND
+             ($artistId is null OR (artists.id = $artistId))
              order by songs.name
              limit $limit offset $offset
              """.as(Song.parser.*)

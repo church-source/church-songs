@@ -29,3 +29,5 @@ create table if not exists songs
     constraint songs_artists_id_fk
         foreign key (artist) references artists (id)
 );
+
+ALTER TABLE songs ADD FULLTEXT (name, secondary_name);
