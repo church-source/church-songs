@@ -1,5 +1,7 @@
 package controllers
 
+import java.io._
+
 import javax.inject._
 import play.api.mvc._
 import anorm._
@@ -44,6 +46,21 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 
+  def getLyrics(id: String): Action[AnyContent] = Action {
+    db.withConnection { implicit c =>
+      val lyrics = SQL"""
+             SELECT songs.lyrics_text
+             from songs
+             where songs.id = $id
+             """.as(scalar[String].singleOpt)
+
+      lyrics match {
+        case Some(lyrics) => Ok(lyrics)
+        case None => NotFound(Json.obj("error" -> "Not Found"))
+      }
+    }
+  }
+
   def findByCode(code: String): Action[AnyContent] = Action {
     db.withConnection { implicit c =>
       SQL"""
@@ -71,7 +88,7 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 
-  def list(search: Option[String], artistId: Option[Long], offset: Int, limit: Int): Action[AnyContent] = Action {
+  def list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean, offset: Int, limit: Int): Action[AnyContent] = Action {
     //loggerlogger.debug(s"Reading Songs")
 
     db.withConnection { implicit c =>
@@ -93,15 +110,16 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
                     songs.guitar_sheet as guitarSheet,
                     songs.lyrics_sheet as lyricsSheet
              from songs left join artists ON (songs.artist = artists.id) where
-             ($search is null OR (match (songs.name, secondary_name) AGAINST ($search))) AND
+             (($search is null OR (match (songs.name, secondary_name) AGAINST ($search))) OR
+              (($includeTextSearch is true AND $search is null) OR ($includeTextSearch is true AND (match (songs.lyrics_text) AGAINST ($search))))) AND
              ($artistId is null OR (artists.id = $artistId))
-             order by songs.name
+             order by left(code,1), length(code), code
              limit $limit offset $offset
              """.as(Song.parser.*)
       Ok(Json.toJson(songs))
     }
   }
-
+//              (($search is null OR (match () AGAINST ($search))) OR
   def insert(): Action[JsValue] = Action(parse.json) { req =>
       Json.fromJson[Song](req.body) match {
         case JsSuccess(song, _) =>

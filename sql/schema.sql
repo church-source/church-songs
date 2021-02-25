@@ -24,6 +24,7 @@ create table if not exists songs
     lead_sheet varchar(1000) null,
     guitar_sheet varchar(1000) null,
     lyrics_sheet varchar(1000) null,
+    lyrics_text text null
     constraint songs_code_uindex
         unique (code),
     constraint songs_artists_id_fk
