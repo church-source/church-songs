@@ -8,14 +8,20 @@ import play.api.libs.json._
 import anorm.SqlParser._
 import models.Artist
 import play.api.Logger
+import security.{AddSongsAuthAction, EditSongsAuthAction, ViewSongsAuthAction}
 
 
 @Singleton
-class ArtistController @Inject()(val controllerComponents: ControllerComponents, db: Database) extends BaseController {
+class ArtistController @Inject()(val controllerComponents: ControllerComponents,
+                                 db: Database,
+                                 // for now we just assume that view songs give view artists permission and so on...
+                                 viewSongsAuthAction: ViewSongsAuthAction,
+                                 editSongsAuthAction: EditSongsAuthAction,
+                                 addSongsAuthAction: AddSongsAuthAction) extends BaseController {
 
   val logger = Logger("application")
 
-  def index(id: Long): Action[AnyContent] = Action {
+  def index(id: Long): Action[AnyContent] = viewSongsAuthAction {
 
     db.withConnection { implicit c =>
           SQL"""
@@ -30,7 +36,7 @@ class ArtistController @Inject()(val controllerComponents: ControllerComponents,
     }
   }
 
-  def list(offset: Int, limit: Int): Action[AnyContent] = Action {
+  def list(offset: Int, limit: Int): Action[AnyContent] = viewSongsAuthAction {
 
     db.withConnection { implicit c =>
       val artists =
@@ -45,7 +51,7 @@ class ArtistController @Inject()(val controllerComponents: ControllerComponents,
     }
   }
 
-  def insert(): Action[JsValue] = Action(parse.json) { req =>
+  def insert(): Action[JsValue] = addSongsAuthAction(parse.json) { req =>
     logger.debug("Got here today:")
     Json.fromJson[Artist](req.body) match {
         case JsSuccess(artist, _) =>
@@ -68,7 +74,7 @@ class ArtistController @Inject()(val controllerComponents: ControllerComponents,
       }
   }
 
-  def update(id: Long): Action[JsValue] = Action(parse.json) { req =>
+  def update(id: Long): Action[JsValue] = editSongsAuthAction(parse.json) { req =>
     Json.fromJson[Artist](req.body) match {
       case JsSuccess(artist, _) =>
         db.withConnection { implicit c =>
