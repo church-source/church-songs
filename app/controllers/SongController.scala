@@ -11,14 +11,23 @@ import anorm.SqlParser._
 import models.Song
 import models.Artist
 import play.api.Logger
+import security.ViewSongsAuthAction
+import security.AddSongsAuthAction
+import security.EditSongsAuthAction
+
 
 
 @Singleton
-class SongController @Inject()(val controllerComponents: ControllerComponents, db: Database) extends BaseController {
+class SongController @Inject()(
+                                val controllerComponents: ControllerComponents,
+                                db: Database,
+                                viewSongsAuthAction: ViewSongsAuthAction,
+                                editSongsAuthAction: EditSongsAuthAction,
+                                addSongsAuthAction: AddSongsAuthAction) extends BaseController {
 
   val logger = Logger("application")
 
-  def index(id: Long): Action[AnyContent] = Action {
+  def index(id: Long): Action[AnyContent] = viewSongsAuthAction {
 
     db.withConnection { implicit c =>
           SQL"""
@@ -46,7 +55,7 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 
-  def getLyrics(id: String): Action[AnyContent] = Action {
+  def getLyrics(id: String): Action[AnyContent] = viewSongsAuthAction {
     db.withConnection { implicit c =>
       val lyrics = SQL"""
              SELECT songs.lyrics_text
@@ -61,7 +70,7 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 
-  def findByCode(code: String): Action[AnyContent] = Action {
+  def findByCode(code: String): Action[AnyContent] = viewSongsAuthAction {
     db.withConnection { implicit c =>
       SQL"""
              SELECT songs.id,
@@ -88,7 +97,7 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 
-  def list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean, offset: Int, limit: Int): Action[AnyContent] = Action {
+  def list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean, offset: Int, limit: Int): Action[AnyContent] = viewSongsAuthAction {
     //loggerlogger.debug(s"Reading Songs")
 
     db.withConnection { implicit c =>
@@ -120,7 +129,7 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
     }
   }
 //              (($search is null OR (match () AGAINST ($search))) OR
-  def insert(): Action[JsValue] = Action(parse.json) { req =>
+  def insert(): Action[JsValue] = addSongsAuthAction(parse.json) { req =>
       Json.fromJson[Song](req.body) match {
         case JsSuccess(song, _) =>
 
@@ -142,7 +151,7 @@ class SongController @Inject()(val controllerComponents: ControllerComponents, d
       }
   }
 
-  def update(id: Long): Action[JsValue] = Action(parse.json) { req =>
+  def update(id: Long): Action[JsValue] = editSongsAuthAction(parse.json) { req =>
     Json.fromJson[Song](req.body) match {
       case JsSuccess(song, _) =>
         db.withConnection { implicit c =>

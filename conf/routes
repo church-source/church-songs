@@ -1,18 +1,18 @@
-GET /echo controllers.SimpleController.echo
-GET /greet controllers.SimpleController.greet(name: String ?= "World")
-GET /todo controllers.SimpleController.todo
-GET /someHtml controllers.SimpleController.someHtml
+GET /api/echo controllers.SimpleController.echo
+GET /api/greet controllers.SimpleController.greet(name: String ?= "World")
+GET /api/todo controllers.SimpleController.todo
+GET /api/someHtml controllers.SimpleController.someHtml
 
-GET /song/:id controllers.SongController.index(id: Long)
-GET /song controllers.SongController.findByCode(code: String)
-GET /song/:id/lyrics controllers.SongController.getLyrics(id: String)
+GET /api/song/:id controllers.SongController.index(id: Long)
+GET /api/song controllers.SongController.findByCode(code: String)
+GET /api/song/:id/lyrics controllers.SongController.getLyrics(id: String)
 
-POST /song controllers.SongController.insert
-PUT /song/:id controllers.SongController.update(id: Long)
+POST /api/song controllers.SongController.insert
+PUT /api/song/:id controllers.SongController.update(id: Long)
 
-GET /songs controllers.SongController.list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean ?= true, offset: Int ?= 0, limit: Int ?= 10)
+GET /api/songs controllers.SongController.list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean ?= true, offset: Int ?= 0, limit: Int ?= 10)
 
-GET /artist/:id controllers.ArtistController.index(id: Long)
-GET /artists controllers.ArtistController.list(offset: Int ?= 0, limit: Int ?= 10)
-POST /artist controllers.ArtistController.insert
-PUT /artist/:id controllers.ArtistController.update(id: Long)
+GET /api/artist/:id controllers.ArtistController.index(id: Long)
+GET /api/artists controllers.ArtistController.list(offset: Int ?= 0, limit: Int ?= 10)
+POST /api/artist controllers.ArtistController.insert
+PUT /api/artist/:id controllers.ArtistController.update(id: Long)
