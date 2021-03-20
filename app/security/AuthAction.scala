@@ -42,7 +42,7 @@ abstract class AuthAction @Inject() (bodyParser: BodyParsers.Default, authServic
   // Called when a request is invoked. We should validate the bearer token here
   // and allow the request to proceed if it is valid.
   override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
-    println(priv)
+    //println(priv)
     extractBearerToken(request) map {(token) => {
         authService.validateJwt(token, priv) match {
           case Success(claim) => block(UserRequest(claim, token, request)) // token was valid - proceed!
