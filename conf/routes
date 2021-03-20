@@ -1,18 +1,18 @@
-GET /api/echo controllers.SimpleController.echo
-GET /api/greet controllers.SimpleController.greet(name: String ?= "World")
-GET /api/todo controllers.SimpleController.todo
-GET /api/someHtml controllers.SimpleController.someHtml
+GET /api/churchsongs/echo controllers.SimpleController.echo
+GET /api/churchsongs/greet controllers.SimpleController.greet(name: String ?= "World")
+GET /api/churchsongs/todo controllers.SimpleController.todo
+GET /api/churchsongs/someHtml controllers.SimpleController.someHtml
 
-GET /api/song/:id controllers.SongController.index(id: Long)
-GET /api/song controllers.SongController.findByCode(code: String)
-GET /api/song/:id/lyrics controllers.SongController.getLyrics(id: String)
+GET /api/churchsongs/song/:id controllers.SongController.index(id: Long)
+GET /api/churchsongs/song controllers.SongController.findByCode(code: String)
+GET /api/churchsongs/song/:id/lyrics controllers.SongController.getLyrics(id: String)
 
-POST /api/song controllers.SongController.insert
-PUT /api/song/:id controllers.SongController.update(id: Long)
+POST /api/churchsongs/song controllers.SongController.insert
+PUT /api/churchsongs/song/:id controllers.SongController.update(id: Long)
 
-GET /api/songs controllers.SongController.list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean ?= true, offset: Int ?= 0, limit: Int ?= 10)
+GET /api/churchsongs/songs controllers.SongController.list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean ?= true, offset: Int ?= 0, limit: Int ?= 10)
 
-GET /api/artist/:id controllers.ArtistController.index(id: Long)
-GET /api/artists controllers.ArtistController.list(offset: Int ?= 0, limit: Int ?= 10)
-POST /api/artist controllers.ArtistController.insert
-PUT /api/artist/:id controllers.ArtistController.update(id: Long)
+GET /api/churchsongs/artist/:id controllers.ArtistController.index(id: Long)
+GET /api/churchsongs/artists controllers.ArtistController.list(offset: Int ?= 0, limit: Int ?= 10)
+POST /api/churchsongs/artist controllers.ArtistController.insert
+PUT /api/churchsongs/artist/:id controllers.ArtistController.update(id: Long)
