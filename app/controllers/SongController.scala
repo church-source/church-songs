@@ -8,8 +8,7 @@ import anorm._
 import play.api.db.Database
 import play.api.libs.json._
 import anorm.SqlParser._
-import models.Song
-import models.Artist
+import models.{Artist, Song, SongLyrics}
 import play.api.Logger
 import security.ViewSongsAuthAction
 import security.AddSongsAuthAction
@@ -98,7 +97,6 @@ class SongController @Inject()(
   }
 
   def list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean, offset: Int, limit: Int): Action[AnyContent] = viewSongsAuthAction {
-    //loggerlogger.debug(s"Reading Songs")
 
     db.withConnection { implicit c =>
       val songs =
@@ -170,6 +168,22 @@ class SongController @Inject()(
                    lead_sheet = ${song.leadSheet},
                    guitar_sheet = ${song.guitarSheet},
                    lyrics_sheet = ${song.lyricsSheet}
+                 where songs.id = $id
+                 """.executeUpdate()
+          logger.info(s"Updated song $id")
+          Ok(Json.obj("updated" -> updateRes))
+        }
+      case _ => BadRequest(Json.obj("err" -> "Invalid Song"))
+    }
+  }
+
+  def updateLyrics(id: Long): Action[JsValue] = editSongsAuthAction(parse.json) { req =>
+    Json.fromJson[SongLyrics](req.body) match {
+      case JsSuccess(song, _) =>
+        db.withConnection { implicit c =>
+          val updateRes = SQL"""
+                 update songs set
+                   lyrics_text = ${song.lyricsText}
                  where songs.id = $id
                  """.executeUpdate()
           logger.info(s"Updated song $id")
