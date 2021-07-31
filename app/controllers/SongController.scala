@@ -1,7 +1,6 @@
 package controllers
 
 import java.io._
-
 import javax.inject._
 import play.api.mvc._
 import anorm._
@@ -9,10 +8,12 @@ import play.api.db.Database
 import play.api.libs.json._
 import anorm.SqlParser._
 import models.{Artist, Song, SongLyrics}
-import play.api.Logger
+import play.api.{Configuration, Logger}
 import security.ViewSongsAuthAction
 import security.AddSongsAuthAction
 import security.EditSongsAuthAction
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 
@@ -22,9 +23,12 @@ class SongController @Inject()(
                                 db: Database,
                                 viewSongsAuthAction: ViewSongsAuthAction,
                                 editSongsAuthAction: EditSongsAuthAction,
-                                addSongsAuthAction: AddSongsAuthAction) extends BaseController {
+                                addSongsAuthAction: AddSongsAuthAction,
+                                config: Configuration) extends BaseController {
 
   val logger = Logger("application")
+  val sheetTypes = List("guitar", "lead", "piano", "lyrics");
+  private def sheetDir = config.get[String]("sheet.dir")
 
   def index(id: Long): Action[AnyContent] = viewSongsAuthAction {
 
@@ -51,6 +55,29 @@ class SongController @Inject()(
             case Some(song) => Ok(Json.toJson(song))
             case None => NotFound(Json.obj("error" -> "Not Found"))
           }
+    }
+  }
+
+  def getSheet(code: String, sheetType: String): Action[AnyContent] = viewSongsAuthAction {
+    db.withConnection { implicit c =>
+      val st = sheetType.toLowerCase;
+      if(!sheetTypes.contains(st)) {
+        BadRequest(Json.obj("error" -> "Type not supported"))
+      }
+      SQL"""
+             SELECT 1
+             from songs
+             where songs.code = $code
+             """.as(scalar[Long].singleOpt) match {
+        case Some(exists) => {
+          var dir = sheetDir;
+          if(!dir.endsWith("/")) {
+            dir = dir + "/";
+          }
+          Ok.sendFile(new java.io.File(dir + "R2_guitar.pdf"))
+        }
+        case None => NotFound(Json.obj("error" -> "No song with that code found"))
+      }
     }
   }
 

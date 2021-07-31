@@ -3,12 +3,14 @@ organization := "com.example"
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala,JavaAppPackaging).settings(
+lazy val root = (project in file("."))
+  .enablePlugins(PlayScala,JavaAppPackaging)
+  .settings(
   dockerSettings
-)
+//  ,javaOptions in Universal ++= jvmSettings
+  )
 
 scalaVersion := "2.12.6"
-//scalaVersion := "2.13.3"
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
@@ -23,22 +25,6 @@ libraryDependencies ++= Seq(
   "com.pauldijou" %% "jwt-core" % "0.19.0",
   "com.auth0" % "jwks-rsa" % "0.6.1"
 )
-/*libraryDependencies ++= Seq(
-  "com.pauldijou" %% "jwt-play" % "4.0.0",
-  "com.pauldijou" %% "jwt-core" % "4.0.0",
-  "com.auth0" % "jwks-rsa" % "0.6.1"
-)*/
-
-
-// libraryDependencies += "com.pauldijou" %% "jwt-core" % "2.1.0"
-// libraryDependencies += "com.pauldijou" %% "jwt-play" % "0.19.0"
-// libraryDependencies += "com.auth0" % "jwks-rsa" % "0.6.1"
-
-// Adds additional packages into Twirl
-//TwirlKeys.templateImports += "com.example.controllers._"
-
-// Adds additional packages into conf/routes
-// play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"
 
 javaOptions in Universal ++= Seq(
   "-Dpidfile.path=/dev/null"
@@ -54,3 +40,18 @@ lazy val dockerSettings =
     dockerRepository := Some("docker.io"),
     dockerUsername := Some("churchsource")
   )
+
+lazy val jvmSettings = Seq(
+  "-Dpidfile.path=/dev/null",
+  "-J-Xtune:virtualized",
+  "-J-XX:+UseContainerSupport",
+  "-J-XX:InitialRAMPercentage=30",
+  "-J-XX:MaxRAMPercentage=75",
+  "-J-Xjit:enableSelfTuningScratchMemoryUsageBeforeCompile",
+  "-J-XX:ActiveProcessorCount=4",
+  "-J-Xss128k",
+  "-XX:MaxRAM=72m",
+  "-XX:+UseSerialGC",
+  "-J-XX:+ClassRelationshipVerifier",
+  "-J-Xcompressedrefs"
+)

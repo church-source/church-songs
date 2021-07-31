@@ -6,11 +6,11 @@ GET /api/churchsongs/someHtml controllers.SimpleController.someHtml
 GET /api/churchsongs/song/:id controllers.SongController.index(id: Long)
 GET /api/churchsongs/song controllers.SongController.findByCode(code: String)
 GET /api/churchsongs/song/:id/lyrics controllers.SongController.getLyrics(id: String)
+GET /api/churchsongs/song/sheet/:sheetType/:code controllers.SongController.getSheet(code: String, sheetType: String)
 
 POST /api/churchsongs/song controllers.SongController.insert
 PUT /api/churchsongs/song/:id controllers.SongController.update(id: Long)
 PUT /api/churchsongs/song/:id/lyrics controllers.SongController.updateLyrics(id: Long)
-
 
 GET /api/churchsongs/songs controllers.SongController.list(search: Option[String], artistId: Option[Long], includeTextSearch: Boolean ?= true, offset: Int ?= 0, limit: Int ?= 10)
 
