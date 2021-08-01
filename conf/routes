@@ -8,6 +8,10 @@ GET /api/churchsongs/song controllers.SongController.findByCode(code: String)
 GET /api/churchsongs/song/:id/lyrics controllers.SongController.getLyrics(id: String)
 GET /api/churchsongs/song/sheet/:sheetType/:code controllers.SongController.getSheet(code: String, sheetType: String)
 
+#temp hack to handle sheets
+GET /gdrive/sheets/:fileName controllers.SongController.getSheetFromFileName(fileName: String)
+
+
 POST /api/churchsongs/song controllers.SongController.insert
 PUT /api/churchsongs/song/:id controllers.SongController.update(id: Long)
 PUT /api/churchsongs/song/:id/lyrics controllers.SongController.updateLyrics(id: Long)
