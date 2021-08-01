@@ -83,28 +83,38 @@ class SongController @Inject()(
 
   def getSheetFromFileName(fileName: String): Action[AnyContent] = Action {
     db.withConnection { implicit c =>
-      if(fileName == null || fileName.isEmpty || fileName.split("_").length == 0) {
-        BadRequest(Json.obj("error" -> "Invalid fileName provided"))
-      }
-      val code = fileName.split("_")(0)
-      var st = fileName.split("_")(1).toLowerCase
-      st = st.replace(".pdf","")
-      if(!sheetTypes.contains(st)) {
-        BadRequest(Json.obj("error" -> "Type not supported"))
-      }
-      SQL"""
+      try {
+        if (fileName == null || fileName.isEmpty || fileName.split("_").length != 2) {
+          throw new Exception("Invalid file name provided")
+        }
+        val code = fileName.split("_")(0)
+        var st = fileName.split("_")(1).toLowerCase
+        st = st.replace(".pdf", "")
+        if (!sheetTypes.contains(st)) {
+          throw new Exception("Invalid Sheet Type provided")
+          //return BadRequest(Json.obj("error" -> "Type not supported"))
+        }
+        SQL"""
              SELECT 1
              from songs
              where songs.code = $code
              """.as(scalar[Long].singleOpt) match {
-        case Some(exists) => {
-          var dir = sheetDir;
-          if(!dir.endsWith("/")) {
-            dir = dir + "/";
+          case Some(exists) => {
+            var dir = sheetDir;
+            if (!dir.endsWith("/")) {
+              dir = dir + "/";
+            }
+            try {
+              Ok.sendFile(new java.io.File(dir + code + "_" + st + ".pdf"))
+            } catch {
+              case e: Throwable => throw new Exception("Something went wrong trying to load the sheet file.");
+            }
           }
-          Ok.sendFile(new java.io.File(dir + code + "_" + st + ".pdf"))
+          case None => NotFound(Json.obj("error" -> "No song with that code found"))
         }
-        case None => NotFound(Json.obj("error" -> "No song with that code found"))
+      } catch {
+        case e: Throwable => BadRequest(Json.obj("error" -> e.getMessage))
+
       }
     }
   }
