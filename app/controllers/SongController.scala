@@ -15,8 +15,6 @@ import security.EditSongsAuthAction
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
-
 @Singleton
 class SongController @Inject()(
                                 val controllerComponents: ControllerComponents,
