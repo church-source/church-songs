@@ -1,6 +1,5 @@
 package controllers
 
-import java.io._
 import javax.inject._
 import play.api.mvc._
 import anorm._
