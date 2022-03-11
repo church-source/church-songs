@@ -16,6 +16,7 @@ libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.42"
 libraryDependencies += jdbc
+libraryDependencies += evolutions
 libraryDependencies += "org.playframework.anorm" %% "anorm" % "2.6.4"
 libraryDependencies += "biz.paluch.logging" % "logstash-gelf" % "1.14.0"
 libraryDependencies += "ai.x" %% "play-json-extensions" % "0.40.2"
