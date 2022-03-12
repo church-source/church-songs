@@ -65,7 +65,7 @@ class ArtistController @Inject()(val controllerComponents: ControllerComponents,
             id
           }
           logger.info(s"Inserted artist $id")
-          Created(Json.obj("id" -> id))
+          Created(Json.obj("artistId" -> id))
 
         case e: JsError => {
           println(e)
